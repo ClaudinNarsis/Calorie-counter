@@ -402,9 +402,9 @@
             const weight = parseFloat(localStorage.getItem('weight')) || 70;
             const height = parseFloat(localStorage.getItem('height')) || 170;
 
-            // Calculate BMR using Mifflin-St Jeor (assuming male, age 30 for simplicity)
-            const bmr = 10 * weight + 6.25 * height - 5 * 30 + 5;
-            const tdee = bmr * 1.5; // Moderate activity level
+            // Calculate BMR using Mifflin-St Jeor (assuming male, age 25 for simplicity)
+            const bmr = 10 * weight + 6.25 * height - 5 * 25 + 5;
+            const tdee = bmr * 1.2; // Moderate activity level
 
             // Calculate macros (40% carbs, 30% protein, 30% fat)
             const carbsTarget = (tdee * 0.40) / 4; // 4 calories per gram
