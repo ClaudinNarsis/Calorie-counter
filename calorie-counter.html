@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calorie Counter</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            text-align: center;
+            color: #667eea;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .section h2 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .profile-inputs {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .input-group label {
+            margin-bottom: 5px;
+            color: #555;
+            font-weight: 600;
+        }
+
+        .input-group input {
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background 0.3s;
+        }
+
+        .btn:hover {
+            background: #5568d3;
+        }
+
+        .food-selection {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .food-selection select {
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 1em;
+        }
+
+        .food-log {
+            margin-top: 20px;
+        }
+
+        .food-item {
+            background: white;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .food-item-info {
+            flex: 1;
+        }
+
+        .food-item-name {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .food-item-nutrients {
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .remove-btn {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .remove-btn:hover {
+            background: #c0392b;
+        }
+
+        .progress-container {
+            margin-bottom: 20px;
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 30px;
+            background: #e0e0e0;
+            border-radius: 15px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            transition: width 0.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+
+        .progress-fill.over-target {
+            background: linear-gradient(90deg, #e74c3c 0%, #c0392b 100%);
+        }
+
+        .totals {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .total-card {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .total-label {
+            color: #666;
+            font-size: 0.9em;
+            margin-bottom: 5px;
+        }
+
+        .total-value {
+            font-size: 2em;
+            font-weight: 700;
+            color: #667eea;
+        }
+
+        .reset-btn {
+            background: #e74c3c;
+            margin-left: 10px;
+        }
+
+        .reset-btn:hover {
+            background: #c0392b;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🥗 Calorie Counter</h1>
+
+        <!-- Profile Section -->
+        <div class="section">
+            <h2>👤 Profile</h2>
+            <div class="profile-inputs">
+                <div class="input-group">
+                    <label for="weight">Weight (kg)</label>
+                    <input type="number" id="weight" placeholder="70" step="0.1">
+                </div>
+                <div class="input-group">
+                    <label for="height">Height (cm)</label>
+                    <input type="number" id="height" placeholder="170" step="1">
+                </div>
+            </div>
+            <button class="btn" onclick="saveProfile()">Save Profile</button>
+        </div>
+
+        <!-- Nutrient Targets & Progress -->
+        <div class="section">
+            <h2>🎯 Daily Targets & Progress</h2>
+            <div id="progress-bars"></div>
+        </div>
+
+        <!-- Food Selection -->
+        <div class="section">
+            <h2>🍽️ Add Food</h2>
+            <div class="food-selection">
+                <select id="food-select">
+                    <option value="">Select a food item...</option>
+                </select>
+                <button class="btn" onclick="addFood()">Add</button>
+            </div>
+        </div>
+
+        <!-- Today's Food Log -->
+        <div class="section">
+            <h2>📋 Today's Log</h2>
+            <div class="food-log" id="food-log"></div>
+            <button class="btn reset-btn" onclick="resetDay()">Reset Today</button>
+        </div>
+
+        <!-- Totals Summary -->
+        <div class="section">
+            <h2>📊 Today's Totals</h2>
+            <div class="totals" id="totals"></div>
+        </div>
+    </div>
+
+    <script>
+        // Fixed dataset of food items
+        const FOOD_DATABASE = [
+            { name: "Chicken Breast (100g)", carbs: 0, protein: 31, fiber: 0, fat: 3.6 },
+            { name: "Brown Rice (1 cup cooked)", carbs: 45, protein: 5, fiber: 3.5, fat: 1.8 },
+            { name: "Broccoli (1 cup)", carbs: 6, protein: 2.6, fiber: 2.4, fat: 0.3 },
+            { name: "Salmon (100g)", carbs: 0, protein: 25, fiber: 0, fat: 13 },
+            { name: "Eggs (2 large)", carbs: 1.2, protein: 12.6, fiber: 0, fat: 10 },
+            { name: "Oatmeal (1 cup cooked)", carbs: 27, protein: 6, fiber: 4, fat: 3.5 },
+            { name: "Banana (1 medium)", carbs: 27, protein: 1.3, fiber: 3.1, fat: 0.4 },
+            { name: "Almonds (28g)", carbs: 6, protein: 6, fiber: 3.5, fat: 14 },
+            { name: "Greek Yogurt (1 cup)", carbs: 9, protein: 17, fiber: 0, fat: 5 },
+            { name: "Sweet Potato (1 medium)", carbs: 24, protein: 2.3, fiber: 3.8, fat: 0.2 },
+            { name: "Avocado (1/2 medium)", carbs: 6, protein: 1.5, fiber: 5, fat: 11 },
+            { name: "Apple (1 medium)", carbs: 25, protein: 0.5, fiber: 4.4, fat: 0.3 },
+            { name: "Spinach (1 cup raw)", carbs: 1.1, protein: 0.9, fiber: 0.7, fat: 0.1 },
+            { name: "Whole Wheat Bread (2 slices)", carbs: 24, protein: 8, fiber: 4, fat: 2 },
+            { name: "Peanut Butter (2 tbsp)", carbs: 8, protein: 8, fiber: 2, fat: 16 },
+            { name: "Tuna (100g canned)", carbs: 0, protein: 26, fiber: 0, fat: 1 },
+            { name: "Lentils (1 cup cooked)", carbs: 40, protein: 18, fiber: 16, fat: 0.8 },
+            { name: "Milk (1 cup)", carbs: 12, protein: 8, fiber: 0, fat: 8 },
+            { name: "Orange (1 medium)", carbs: 15, protein: 1.2, fiber: 3.1, fat: 0.2 },
+            { name: "Quinoa (1 cup cooked)", carbs: 39, protein: 8, fiber: 5, fat: 3.6 }
+        ];
+
+        // Initialize the app
+        function init() {
+            loadProfile();
+            loadFoodDatabase();
+            loadTodaysLog();
+            updateUI();
+        }
+
+        // Load profile from localStorage
+        function loadProfile() {
+            const weight = localStorage.getItem('weight');
+            const height = localStorage.getItem('height');
+
+            if (weight) document.getElementById('weight').value = weight;
+            if (height) document.getElementById('height').value = height;
+        }
+
+        // Save profile to localStorage
+        function saveProfile() {
+            const weight = document.getElementById('weight').value;
+            const height = document.getElementById('height').value;
+
+            if (weight && height) {
+                localStorage.setItem('weight', weight);
+                localStorage.setItem('height', height);
+                updateUI();
+                alert('Profile saved successfully!');
+            } else {
+                alert('Please enter both weight and height');
+            }
+        }
+
+        // Load food database into select dropdown
+        function loadFoodDatabase() {
+            const select = document.getElementById('food-select');
+            FOOD_DATABASE.forEach((food, index) => {
+                const option = document.createElement('option');
+                option.value = index;
+                option.textContent = food.name;
+                select.appendChild(option);
+            });
+        }
+
+        // Get today's date as string
+        function getTodayKey() {
+            const today = new Date();
+            return `log_${today.getFullYear()}_${today.getMonth() + 1}_${today.getDate()}`;
+        }
+
+        // Load today's food log
+        function loadTodaysLog() {
+            const todayKey = getTodayKey();
+            const log = localStorage.getItem(todayKey);
+            return log ? JSON.parse(log) : [];
+        }
+
+        // Save today's food log
+        function saveTodaysLog(log) {
+            const todayKey = getTodayKey();
+            localStorage.setItem(todayKey, JSON.stringify(log));
+        }
+
+        // Add food to today's log
+        function addFood() {
+            const select = document.getElementById('food-select');
+            const index = select.value;
+
+            if (index === '') {
+                alert('Please select a food item');
+                return;
+            }
+
+            const food = FOOD_DATABASE[index];
+            const log = loadTodaysLog();
+            log.push({ ...food, timestamp: Date.now() });
+            saveTodaysLog(log);
+            updateUI();
+            select.value = '';
+        }
+
+        // Remove food from log
+        function removeFood(index) {
+            const log = loadTodaysLog();
+            log.splice(index, 1);
+            saveTodaysLog(log);
+            updateUI();
+        }
+
+        // Reset today's log
+        function resetDay() {
+            if (confirm('Are you sure you want to reset today\'s log?')) {
+                saveTodaysLog([]);
+                updateUI();
+            }
+        }
+
+        // Calculate daily targets based on weight and height
+        function calculateTargets() {
+            const weight = parseFloat(localStorage.getItem('weight')) || 70;
+            const height = parseFloat(localStorage.getItem('height')) || 170;
+
+            // Calculate BMR using Mifflin-St Jeor (assuming male, age 30 for simplicity)
+            const bmr = 10 * weight + 6.25 * height - 5 * 30 + 5;
+            const tdee = bmr * 1.5; // Moderate activity level
+
+            // Calculate macros (40% carbs, 30% protein, 30% fat)
+            const carbsTarget = (tdee * 0.40) / 4; // 4 calories per gram
+            const proteinTarget = (tdee * 0.30) / 4; // 4 calories per gram
+            const fatTarget = (tdee * 0.30) / 9; // 9 calories per gram
+            const fiberTarget = 25; // Standard recommendation
+
+            return {
+                carbs: Math.round(carbsTarget),
+                protein: Math.round(proteinTarget),
+                fiber: fiberTarget,
+                fat: Math.round(fatTarget)
+            };
+        }
+
+        // Calculate totals from today's log
+        function calculateTotals() {
+            const log = loadTodaysLog();
+            return log.reduce((totals, food) => {
+                totals.carbs += food.carbs;
+                totals.protein += food.protein;
+                totals.fiber += food.fiber;
+                totals.fat += food.fat;
+                return totals;
+            }, { carbs: 0, protein: 0, fiber: 0, fat: 0 });
+        }
+
+        // Update all UI elements
+        function updateUI() {
+            updateProgressBars();
+            updateFoodLog();
+            updateTotals();
+        }
+
+        // Update progress bars
+        function updateProgressBars() {
+            const targets = calculateTargets();
+            const totals = calculateTotals();
+            const container = document.getElementById('progress-bars');
+
+            container.innerHTML = '';
+
+            const nutrients = [
+                { name: 'Carbohydrates', key: 'carbs', unit: 'g' },
+                { name: 'Protein', key: 'protein', unit: 'g' },
+                { name: 'Fiber', key: 'fiber', unit: 'g' },
+                { name: 'Fat', key: 'fat', unit: 'g' }
+            ];
+
+            nutrients.forEach(nutrient => {
+                const current = totals[nutrient.key];
+                const target = targets[nutrient.key];
+                const percentage = Math.min((current / target) * 100, 100);
+                const isOver = current > target;
+
+                const progressHTML = `
+                    <div class="progress-container">
+                        <div class="progress-label">
+                            <span>${nutrient.name}</span>
+                            <span>${current.toFixed(1)}${nutrient.unit} / ${target}${nutrient.unit}</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill ${isOver ? 'over-target' : ''}"
+                                 style="width: ${percentage}%">
+                                ${percentage.toFixed(0)}%
+                            </div>
+                        </div>
+                    </div>
+                `;
+                container.innerHTML += progressHTML;
+            });
+        }
+
+        // Update food log display
+        function updateFoodLog() {
+            const log = loadTodaysLog();
+            const container = document.getElementById('food-log');
+
+            if (log.length === 0) {
+                container.innerHTML = '<p style="color: #999; text-align: center;">No food logged today</p>';
+                return;
+            }
+
+            container.innerHTML = log.map((food, index) => `
+                <div class="food-item">
+                    <div class="food-item-info">
+                        <div class="food-item-name">${food.name}</div>
+                        <div class="food-item-nutrients">
+                            Carbs: ${food.carbs}g | Protein: ${food.protein}g | Fiber: ${food.fiber}g | Fat: ${food.fat}g
+                        </div>
+                    </div>
+                    <button class="remove-btn" onclick="removeFood(${index})">Remove</button>
+                </div>
+            `).join('');
+        }
+
+        // Update totals summary
+        function updateTotals() {
+            const totals = calculateTotals();
+            const container = document.getElementById('totals');
+
+            const nutrients = [
+                { name: 'Total Carbs', value: totals.carbs, unit: 'g' },
+                { name: 'Total Protein', value: totals.protein, unit: 'g' },
+                { name: 'Total Fiber', value: totals.fiber, unit: 'g' },
+                { name: 'Total Fat', value: totals.fat, unit: 'g' }
+            ];
+
+            container.innerHTML = nutrients.map(nutrient => `
+                <div class="total-card">
+                    <div class="total-label">${nutrient.name}</div>
+                    <div class="total-value">${nutrient.value.toFixed(1)}<span style="font-size: 0.5em">${nutrient.unit}</span></div>
+                </div>
+            `).join('');
+        }
+
+        // Initialize on page load
+        init();
+    </script>
+</body>
+</html>
